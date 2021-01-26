@@ -34,9 +34,10 @@ function search(req, res) {
 
     const url = `https://www.googleapis.com/books/v1/volumes?q=+intitle:${search[1]}`;
     superagent.get(url).then(obj => {
-      // console.log(obj.body.items);
-      const book = new Book(obj);
-      res.send(book);
+      const books = obj.body.items.map(item => new Book(item));
+
+      // console.log(books);
+      res.render('pages/searches/show.ejs', { books: books });
     });
   } else if (search[0] === 'author') {
     const url = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${search[1]}`;
@@ -44,12 +45,10 @@ function search(req, res) {
 
       const books = obj.body.items.map(item => new Book(item));
 
-      console.log(books);
+      // console.log(books);
       res.render('pages/searches/show.ejs', { books: books });
 
 
-
-      res.render('pages/searches/show.ejs', { books: books });
 
     });
 
