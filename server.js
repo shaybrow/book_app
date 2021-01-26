@@ -32,18 +32,26 @@ function searchTitle(req, res) {
     const url = `https://www.googleapis.com/books/v1/volumes?q=+intitle:${search[1]}`;
     superagent.get(url).then(obj => {
       // console.log(obj.body.items);
-      res.send(obj.body.items);
+      const book = new Book(obj);
+      res.send(book);
     });
   } else if (search[0] === 'author') {
     const url = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${search[1]}`;
     superagent.get(url).then(obj => {
-      res.send(obj.body.items);
+      const book = new Book(obj);
+      console.log(book);
+      res.send(book);
     });
 
   }
 }
 
-
+function Book(obj) {
+  this.title = obj.body.items[0].title;
+  this.authorName = obj.body.items[0].authors;
+  this.description = obj.body.items[0].description;
+  this.url = obj.body.items[0].imageLinks;
+}
 
 
 
