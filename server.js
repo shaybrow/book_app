@@ -42,34 +42,28 @@ function search(req, res) {
     const url = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${search[1]}`;
     superagent.get(url).then(obj => {
 
-      const books = obj.body.items.map(book =>
-      ({
-        title: book.volumeInfo.title,
-        author: book.volumeInfo.authors ? book.volumeInfo.authors[0] : 'Unknown',
-        url: book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : 'Unknown'
-      })
-      );
-      res.render('show.ejs', { books: books });
+      const books = obj.body.items.map(item => new Book(item));
+
+      console.log(books);
+      res.render('pages/searches/show.ejs', { books: books });
 
 
-      const book = new Book(obj);
-      console.log(book);
-      res.send(book);
+
+      res.render('pages/searches/show.ejs', { books: books });
 
     });
 
   }
 }
 
-function Book(obj) {
-  this.title = obj.body.items[0].title;
-  this.authorName = obj.body.items[0].authors;
-  this.description = obj.body.items[0].description;
-  this.url = obj.body.items[0].imageLinks;
+function Book(book) {
+  this.title = book.volumeInfo.title;
+  this.author = book.volumeInfo.authors ? book.volumeInfo.authors[0] : 'Unknown';
+  this.url = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : 'Unknown';
 }
 
 
 
 
-app.listen(PORT);
+app.listen(3000);
 
