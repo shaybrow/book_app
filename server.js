@@ -6,14 +6,19 @@ const cors = require('cors');
 const superagent = require('superagent');
 const app = express();
 const PORT = process.env.PORT;
-
+const pg = require('pg');
+const DATABASE_URL = process.env.DATABASE_URL;
+const client = new pg.Client(DATABASE_URL);
+client.on('error', (error) => {
+  console.log(error);
+});
 // allows app to read form data from URLs
 // boiler plate for talking to forms using POST
 app.use(express.urlencoded({ extended: true }));
 
 // loading the public folder
 app.use(express.static('./public'));
-
+app.use('cors');
 app.set('view engine', 'ejs');
 
 // displays our home page
@@ -63,6 +68,7 @@ function Book(book) {
 
 
 
-
-app.listen(3000);
+client.connect().then(() => {
+  app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
+});
 
