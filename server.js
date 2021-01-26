@@ -5,12 +5,13 @@ const express = require('express');
 const cors = require('cors');
 const superagent = require('superagent');
 const app = express();
+const PORT = process.env.PORT;
 
 // allows app to read form data from URLs
 app.use(express.urlencoded({ extended: true }));
 
 // loading the public folder
-app.use(express.static('./public'));
+app.use(express.static(__dirname + '/public'));
 
 app.set('view engine', 'ejs');
 
@@ -48,5 +49,5 @@ function searchTitle(req, res) {
 
 
 
-app.listen(3000);
+app.listen(PORT);
 
