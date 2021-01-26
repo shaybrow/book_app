@@ -15,12 +15,13 @@
 
 
   </nav>
-  <% for (let i=i<books.length; i++) { %>
-    <li>
-      <%= books[i].title %> by <%= books[i].author %>
-    </li>
-    }
-
+  <ul>
+    <% for (let i=0;i<books.length; i++) { %>
+      <li>
+        <%= books[i].title %> by <%= books[i].author %>
+      </li>
+      <% } %>
+  </ul>
 </body>
 
 </html>
