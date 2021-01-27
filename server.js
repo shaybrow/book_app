@@ -21,19 +21,22 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./public'));
 app.set('view engine', 'ejs');
 
+//how to retrieve last inserted id psql 
+// result.rows[0].id os where id lives
 // displays our home page
 app.get('/', getIndex);
-
+app.get('/books/:id', getBookInfo);
 function getIndex(req, res) {
   const sqlCheck = 'SELECT * FROM books';
-  const sqlArr = [];
-  client.query(sqlCheck, sqlArr)
+  const array = [req.body.title];
+  client.query(sqlCheck)
     .then(savedBooks => {
       if (savedBooks.rows.length !== 0) {
         res.send(savedBooks.rows[0]);
       } else {
         // const sqlCheck2 = 'INSERT INTO books';
-        res.render('/pages/index.ejs');
+        const id = res.rows[0].id;
+        res.redirect(`/books/${id});
       }
     });
   // res.render('pages/index.ejs');
@@ -52,37 +55,37 @@ function search(req, res) {
   if (search[0] === 'title') {
 
     const url = `https://www.googleapis.com/books/v1/volumes?q=+intitle:${search[1]}`;
-    superagent.get(url).then(obj => {
-      const books = obj.body.items.map(item => new Book(item));
+          superagent.get(url).then(obj => {
+            const books = obj.body.items.map(item => new Book(item));
 
-      // console.log(books);
-      res.render('pages/searches/show.ejs', { books: books });
-    });
-  } else if (search[0] === 'author') {
-    const url = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${search[1]}`;
-    superagent.get(url).then(obj => {
+            // console.log(books);
+            res.render('pages/searches/show.ejs', { books: books });
+          });
+      } else if (search[0] === 'author') {
+        const url = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${search[1]}`;
+        superagent.get(url).then(obj => {
 
-      const books = obj.body.items.map(item => new Book(item));
+          const books = obj.body.items.map(item => new Book(item));
 
-      // console.log(books);
-      res.render('pages/searches/show.ejs', { books: books });
+          // console.log(books);
+          res.render('pages/searches/show.ejs', { books: books });
 
 
 
-    });
+        });
 
-  }
-}
+      }
+    }
 
 function Book(book) {
-  this.title = book.volumeInfo.title;
-  this.author = book.volumeInfo.authors ? book.volumeInfo.authors[0] : 'Unknown';
-  this.url = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : 'Unknown';
-}
+        this.title = book.volumeInfo.title;
+        this.author = book.volumeInfo.authors ? book.volumeInfo.authors[0] : 'Unknown';
+        this.url = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : 'Unknown';
+      }
 
 
 
 client.connect().then(() => {
-  app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
-});
+        app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
+      });
 
