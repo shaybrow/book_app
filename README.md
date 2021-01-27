@@ -31,6 +31,13 @@
 - Finish time:
 - Actual time needed to complete:
 
+**Number and name of feature**: 4. SQL server and storage
+
+- Estimate of time needed to complete: 1hr 
+- Start time: 3:31
+- Finish time: 4:52 
+- Actual time needed to complete: 1hr 20 min
+
 **Number and name of feature**:
  
 ## Change log
@@ -38,3 +45,6 @@
 - 01-25-2021 3:52pm fully functional server
 - 01-25-2021 4:45pm user can now select search by title or search by author
 - 01-26-2021 3:05pm user is able to browse search results by viewing books as an unordered list
+- 3:59 PM SQL database connected and running
+- 4:52 database now checks for saved books and lists them on index
+
