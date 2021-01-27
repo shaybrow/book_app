@@ -2,11 +2,12 @@
 
 
 const express = require('express');
-const cors = require('cors');
 const superagent = require('superagent');
 const app = express();
+require('dotenv').config();
 const PORT = process.env.PORT;
 const pg = require('pg');
+const { get } = require('superagent');
 const DATABASE_URL = process.env.DATABASE_URL;
 const client = new pg.Client(DATABASE_URL);
 client.on('error', (error) => {
@@ -18,13 +19,26 @@ app.use(express.urlencoded({ extended: true }));
 
 // loading the public folder
 app.use(express.static('./public'));
-app.use('cors');
 app.set('view engine', 'ejs');
 
 // displays our home page
-app.get('/', (req, res) => {
-  res.render('pages/index.ejs');
-});
+app.get('/', getIndex);
+
+function getIndex(req, res) {
+  const sqlCheck = 'SELECT * FROM books';
+  const sqlArr = [];
+  client.query(sqlCheck, sqlArr)
+    .then(savedBooks => {
+      if (savedBooks.rows.length !== 0) {
+        res.send(savedBooks.rows[0]);
+      } else {
+        // const sqlCheck2 = 'INSERT INTO books';
+        res.render('/pages/index.ejs');
+      }
+    });
+  // res.render('pages/index.ejs');
+}
+
 
 app.get('/booksearch', (req, res) => {
   res.render('pages/searches/new');
