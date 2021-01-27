@@ -19,6 +19,11 @@
     <% for (let i=0;i<books.length; i++) { %>
       <li>
         <%= books[i].title %> by <%= books[i].author %>
+        <!-- this is how we'll save user data to database -->
+        <form action="save" method="POST">
+          <input type="hidden" name="title" value="<%= books[i].title %>">
+          <input type="submit" value="save">
+        </form>
       </li>
       <% } %>
   </ul>
