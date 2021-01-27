@@ -35,8 +35,8 @@
 
 - Estimate of time needed to complete: 1hr 
 - Start time: 3:31
-- Finish time:
-- Actual time needed to complete:
+- Finish time: 4:52 
+- Actual time needed to complete: 1hr 20 min
 
 **Number and name of feature**:
  
@@ -46,3 +46,5 @@
 - 01-25-2021 4:45pm user can now select search by title or search by author
 - 01-26-2021 3:05pm user is able to browse search results by viewing books as an unordered list
 - 3:59 PM SQL database connected and running
+- 4:52 database now checks for saved books and lists them on index
+
