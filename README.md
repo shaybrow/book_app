@@ -48,3 +48,11 @@
 - 3:59 PM SQL database connected and running
 - 4:52 database now checks for saved books and lists them on index
 
+
+- 3:30 fixed routes that broke or were removed from a gitchuation
+
+- 4:00 brought post and get functions into callbacks
+
+- 4:30 updated index.ejs to allow render of DB info
+
+- 5:42 confirmed proof of life of our sql data base renderign books on index.html
