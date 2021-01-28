@@ -25,28 +25,41 @@ app.set('view engine', 'ejs');
 app.get('/', getIndex);
 // app.get('/books', getSearchForm);
 // app.get('/books/:id', getDetails);
-app.get('/booksearch', getBookSearch);
-// app.post('/booksearch', sendBooks);
+app.get('/booksearch', searchPage);
+app.post('/booksearch', getBookSearch);
+app.post('/save', saveBooks);
 
+function saveBooks(req, res) {
+  const sqlSend = 'INSERT INTO books (title, author) VALUES ($1, $2) RETURNING ID';
+  const array = [req.body.title, req.body.author];
+  client.query(sqlSend, array).then(() => {
+    res.send('save');
+  });
+}
 
-
+function searchPage(req, res) {
+  res.render('pages/searches/new');
+}
 
 function getIndex(req, res) {
   const sqlCheck = 'SELECT * FROM books';
-  const sqlArr = [];
-  client.query(sqlCheck, sqlArr)
+
+  client.query(sqlCheck)
     .then(savedBooks => {
-      if (savedBooks.rows.length !== 0) {
-        res.send(savedBooks.rows[0]);
-      } else {
-        // const sqlCheck2 = 'INSERT INTO books';
-        res.render('pages/index.ejs');
-      }
+
+      // const sqlCheck2 = 'INSERT INTO books';
+      res.render('./pages/index.ejs', { books: savedBooks.rows });
+
     });
   // res.render('pages/index.ejs');
 }
 
-
+// function getBooksDb(req, res) {
+//   const sqlSend = 'SELECT * FROM books';
+//   client.query(sqlSend).then(obj => {
+//     res.render('./pages/index.ejs', { books: obj.rows });
+//   });
+// }
 
 function getBookSearch(req, res) {
 
@@ -61,24 +74,27 @@ function getBookSearch(req, res) {
     const url = `https://www.googleapis.com/books/v1/volumes?q=+intitle:${search[1]}`;
     superagent.get(url).then(obj => {
       const books = obj.body.items.map(item => new Book(item));
-      const sqlSend = 'INSERT INTO books (title, author, url';
-      books.forEach(obj => {
-        const sqlArr = [books[obj].title, books[obj].author, books[obj].url];
-        client.query(sqlSend, sqlArr);
-      });
+      // const sqlSend = 'INSERT INTO books (title, author, url';
+      // books.forEach(obj => {
+      //   const sqlArr = [books[obj].title, books[obj].author, books[obj].url];
+      //   client.query(sqlSend, sqlArr);
+
+      res.render('pages/searches/show', { books: books });
     });
-  } else if (search[0] === 'author') {
+
+  }
+  else if (search[0] === 'author') {
     const url = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${search[1]}`;
     superagent.get(url).then(obj => {
 
       const books = obj.body.items.map(item => new Book(item));
-      const sqlSend = 'INSERT INTO books (title, author, url';
-      books.forEach(obj => {
-        const sqlArr = [books[obj].title, books[obj].author, books[obj].url];
-        client.query(sqlSend, sqlArr);
-      });
+      // const sqlSend = 'INSERT INTO books (title, author, url';
+      // books.forEach(obj => {
+      //   const sqlArr = [books[obj].title, books[obj].author, books[obj].url];
+      //   client.query(sqlSend, sqlArr);
+      // });
 
-
+      res.render('pages/searches/show', { books: books });
 
     });
 
