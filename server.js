@@ -12,6 +12,8 @@ const client = new pg.Client(DATABASE_URL);
 client.on('error', (error) => {
   console.log(error);
 });
+const methodOverride = require('method-override');
+
 // allows app to read form data from URLs
 // boiler plate for talking to forms using POST
 app.use(express.urlencoded({ extended: true }));
@@ -28,6 +30,14 @@ app.get('/', getIndex);
 app.get('/booksearch', searchPage);
 app.post('/booksearch', getBookSearch);
 app.post('/save', saveBooks);
+app.put('book/:id', updateBook);
+
+function updateBook(req, res) {
+  res.send('updating a book');
+  //collect new data about the book from the client (front end) send that data to our sql data base which we will reference using the id
+  // res.redirect to the details page /book/:id
+
+}
 
 function saveBooks(req, res) {
   const sqlSend = 'INSERT INTO books (title, author) VALUES ($1, $2) RETURNING ID';
@@ -111,5 +121,14 @@ function Book(book) {
 
 client.connect().then(() => {
   app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
-});
+}).catch(console.error);
+
+//const id = req.params.id;
+//const sqlQuery = 'SELECT * FROM books WHERE id=$1 ;
+// const sqlArray = [id]
+// client.query(sqlQuery, sqlArray).
+//.then( result => {
+//   const singleBook = result.rows
+// });
+// res.render('details.ejs', {book: singleBook})
 
