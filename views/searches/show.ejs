@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Searcher</title>
+  <link ref="stylesheet" type="text/css" href="styles/base.css">
+</head>
+
+<body>
+  <h1>Books</h1>
+  <%- include('../partials/nav.ejs')%>
+    <ul>
+      <% for (let i=0;i<books.length; i++) { %>
+
+        <li>
+          <a href="/books/<%=books[i].id %>" <h2>
+            <%= books[i].title %> by <%= books[i].author %>
+                </h2>
+
+
+                <img src="<%= books[i].url %>">
+                <p>
+                  <%= books[i].description %>
+                </p>
+                Click anywhere for more details.
+          </a>
+          <!-- this is how we'll save user data to database -->
+          <form action="save" method="POST">
+            <input type="hidden" name="title" value="<%= books[i].title %>">
+            <input type="submit" value="save">
+          </form>
+
+        </li>
+        <% } %>
+    </ul>
+</body>
+
+</html>
