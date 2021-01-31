@@ -67,9 +67,10 @@ function searchPage(req, res) {
 
 function getIndex(req, res) {
   const sqlCheck = 'SELECT * FROM books';
-  const array = [req.body.title];
+  // const array = [req.body.title];
   client.query(sqlCheck)
     .then(savedBooks => {
+
       if (savedBooks.rows.length !== 0) {
         res.send(savedBooks.rows[0]);
       } else {
@@ -150,7 +151,6 @@ function getIndex(req, res) {
       }
 
 
-
       client.connect().then(() => {
         app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
       }).catch(console.error);
@@ -163,3 +163,4 @@ function getIndex(req, res) {
 //   const singleBook = result.rows
 // });
 // res.render('details.ejs', {book: singleBook})
+
