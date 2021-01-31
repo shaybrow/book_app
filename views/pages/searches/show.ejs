@@ -1,32 +1,25 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Book Searcher</title>
-  <link ref="stylesheet" type="text/css" href="styles/base.css">
-</head>
+  <%- include('../../layout/head.ejs') %>
 
-<body>
-  <h1>Books</h1>
-  <nav>
-    <a href="/booksearch">Search By Book Title</a>
-
-
-  </nav>
-  <ul>
-    <% for (let i=0;i<books.length; i++) { %>
-      <li>
-        <%= books[i].title %> by <%= books[i].author %>
-        <!-- this is how we'll save user data to database -->
-        <form action="save" method="POST">
-          <input type="hidden" name="title" value="<%= books[i].title %>">
-          <input type="submit" value="save">
-        </form>
-      </li>
-      <% } %>
-  </ul>
-</body>
+  <body>
+    <h1>Books</h1>
+    <nav>
+      <a href="/booksearch">Search By Book Title</a>
+    </nav>
+    <ul>
+      <% for (let i=0;i<books.length; i++) { %>
+        <li>
+          <%= books[i].title %> by <%= books[i].author %>
+          <!-- this is how we'll save user data to database -->
+          <form action="save" method="POST">
+            <input type="hidden" name="title" value="<%= books[i].title %>">
+            <input type="submit" value="save">
+          </form>
+        </li>
+        <% } %>
+    </ul>
+  </body>
 
 </html>

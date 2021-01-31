@@ -1,19 +1,28 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Book Searcher</title>
-</head>
+  <%- include('../layout/head.ejs') %>
 
-<body>
-  <h1>Books</h1>
-  <nav>
-    <a href="/booksearch">Search By Book Title</a>
+  <body>
+    <h1>Books</h1>
+    <nav>
+      <a href="/booksearch">Search By Book Title</a>
+    </nav>
+    <% for(let i=0;i<books.length; i++){ %>
+      <ul>
+        <li>
+          <h2>
+            <%= books[i].title %>
+          </h2>
+        </li>
 
 
-  </nav>
-</body>
+
+
+      </ul>
+
+
+      <% } %>
+  </body>
 
 </html>
