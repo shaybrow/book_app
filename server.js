@@ -117,7 +117,7 @@ function getIndex(req, res) {
 
       function getBookSearch(req, res) {
 
-      // sending info to googles api
+        // sending info to googles api
 
         // post use searchTitles req and res
         const search = req.body.search;
@@ -129,30 +129,31 @@ function getIndex(req, res) {
           superagent.get(url).then(obj => {
             const books = obj.body.items.map(item => new Book(item));
 
-      // console.log(books);
-      res.render('pages/searches/show.ejs', { books: books });
-    });
-} else if (search[0] === 'author') {
-  const url = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${search[1]}`;
-  superagent.get(url).then(obj => {
+            // console.log(books);
+            res.render('pages/searches/show.ejs', { books: books });
+          });
+        } else if (search[0] === 'author') {
+          const url = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${search[1]}`;
+          superagent.get(url).then(obj => {
 
-    const books = obj.body.items.map(item => new Book(item));
-  });
-}}
+            const books = obj.body.items.map(item => new Book(item));
+          });
+        }
+      }
 
-function Book(book) {
-  this.title = book.volumeInfo.title;
-  this.author = book.volumeInfo.authors ? book.volumeInfo.authors[0] : 'Unknown';
-  this.url = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : 'Unknown';
-  this.isbn = ' ';
-  this.bookshelf = ' ';
-}
+      function Book(book) {
+        this.title = book.volumeInfo.title;
+        this.author = book.volumeInfo.authors ? book.volumeInfo.authors[0] : 'Unknown';
+        this.url = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : 'Unknown';
+        this.isbn = ' ';
+        this.bookshelf = ' ';
+      }
 
 
 
-client.connect().then(() => {
-  app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
-}).catch(console.error);
+      client.connect().then(() => {
+        app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
+      }).catch(console.error);
 
 //const id = req.params.id;
 //const sqlQuery = 'SELECT * FROM books WHERE id=$1 ;
@@ -162,7 +163,3 @@ client.connect().then(() => {
 //   const singleBook = result.rows
 // });
 // res.render('details.ejs', {book: singleBook})
-
-client.connect().then(() => {
-  app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
-});
