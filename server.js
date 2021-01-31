@@ -53,6 +53,7 @@ function updateBook(req, res) {
 
 }
 
+
 function saveBooks(req, res) {
   const sqlSend = 'INSERT INTO books (title, author) VALUES ($1, $2) RETURNING ID';
   const array = [req.body.title, req.body.author];
@@ -62,105 +63,64 @@ function saveBooks(req, res) {
 }
 
 function searchPage(req, res) {
-  res.render('searches/new');
+  res.render('pages/searches/new');
 }
 
 function getIndex(req, res) {
   const sqlCheck = 'SELECT * FROM books';
-  // const array = [req.body.title];
+
   client.query(sqlCheck)
     .then(savedBooks => {
 
-      if (savedBooks.rows.length !== 0) {
-        res.send(savedBooks.rows[0]);
-      } else {
-        // const sqlCheck2 = 'INSERT INTO books';
-        const id = res.rows[0].id;
-        res.redirect(`/books/${id}`);
-      }
-      // app.get('/books', getSearchForm);
-      // app.get('/books/:id', getDetails);
-      app.get('/booksearch', searchPage);
-      app.post('/booksearch', getBookSearch);
-      app.post('/save', saveBooks);
+      // const sqlCheck2 = 'INSERT INTO books';
+      res.render('./pages/index.ejs', { books: savedBooks.rows });
 
-      function saveBooks(req, res) {
-        const sqlSend = 'INSERT INTO books (title, author) VALUES ($1, $2) RETURNING ID';
-        const array = [req.body.title, req.body.author];
-        client.query(sqlSend, array).then(() => {
-          res.send('save');
-        });
-      }
+    });
+  // res.render('pages/index.ejs');
+}
 
-      function searchPage(req, res) {
-        res.render('pages/searches/new');
-      }
+// function getBooksDb(req, res) {
+//   const sqlSend = 'SELECT * FROM books';
+//   client.query(sqlSend).then(obj => {
+//     res.render('./pages/index.ejs', { books: obj.rows });
+//   });
+// }
 
-      function getIndex(req, res) {
-        const sqlCheck = 'SELECT * FROM books';
+function getBookSearch(req, res) {
 
-        client.query(sqlCheck)
-          .then(savedBooks => {
+  // sending info to googles api
 
-            // const sqlCheck2 = 'INSERT INTO books';
-            res.render('./pages/index.ejs', { books: savedBooks.rows });
+  // post use searchTitles req and res
+  const search = req.body.search;
+  console.log(req.body);
+  // checking whether title or author is checked in new.ejs
+  if (search[0] === 'title') {
 
-          });
-        // res.render('pages/index.ejs');
-      }
+    const url = `https://www.googleapis.com/books/v1/volumes?q=+intitle:${search[1]}`;
+    superagent.get(url).then(obj => {
+      const books = obj.body.items.map(item => new Book(item));
 
-      // function getBooksDb(req, res) {
-      //   const sqlSend = 'SELECT * FROM books';
-      //   client.query(sqlSend).then(obj => {
-      //     res.render('./pages/index.ejs', { books: obj.rows });
-      //   });
-      // }
+      // console.log(books);
+      res.render('pages/searches/show.ejs', { books: books });
+    });
+  } else if (search[0] === 'author') {
+    const url = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${search[1]}`;
+    superagent.get(url).then(obj => {
 
-      function getBookSearch(req, res) {
+      const books = obj.body.items.map(item => new Book(item));
+    });
+  }
+}
 
-        // sending info to googles api
-
-        // post use searchTitles req and res
-        const search = req.body.search;
-        console.log(req.body);
-        // checking whether title or author is checked in new.ejs
-        if (search[0] === 'title') {
-
-          const url = `https://www.googleapis.com/books/v1/volumes?q=+intitle:${search[1]}`;
-          superagent.get(url).then(obj => {
-            const books = obj.body.items.map(item => new Book(item));
-
-            // console.log(books);
-            res.render('pages/searches/show.ejs', { books: books });
-          });
-        } else if (search[0] === 'author') {
-          const url = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${search[1]}`;
-          superagent.get(url).then(obj => {
-
-            const books = obj.body.items.map(item => new Book(item));
-          });
-        }
-      }
-
-      function Book(book) {
-        this.title = book.volumeInfo.title;
-        this.author = book.volumeInfo.authors ? book.volumeInfo.authors[0] : 'Unknown';
-        this.url = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : 'Unknown';
-        this.isbn = ' ';
-        this.bookshelf = ' ';
-      }
+function Book(book) {
+  this.title = book.volumeInfo.title;
+  this.author = book.volumeInfo.authors ? book.volumeInfo.authors[0] : 'Unknown';
+  this.url = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : 'Unknown';
+  this.isbn = ' ';
+  this.bookshelf = ' ';
+}
 
 
-      client.connect().then(() => {
-        app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
-      }).catch(console.error);
-
-//const id = req.params.id;
-//const sqlQuery = 'SELECT * FROM books WHERE id=$1 ;
-// const sqlArray = [id]
-// client.query(sqlQuery, sqlArray).
-//.then( result => {
-//   const singleBook = result.rows
-// });
-// res.render('details.ejs', {book: singleBook})
-
+client.connect().then(() => {
+  app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
+}).catch(console.error);
