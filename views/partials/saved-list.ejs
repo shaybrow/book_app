@@ -1,0 +1,30 @@
+<% <% for(let i=0;i<books.length; i++){ %>
+  <ul>
+    <li>
+      <h2>
+        <%= books[i].title %>
+      </h2>
+
+    </li>
+    <li>
+      <h3>
+        <%= books[i].author %>
+      </h3>
+    </li>
+    <li>
+      <img src="<%= books[i].url %>" alt="">
+
+    </li>
+    <li>
+      <p>
+        <%= books[i].description %>
+      </p>
+
+    </li>
+    <!-- //<form action="/book<%=book.id %>?_method=PUT" method="POST"></form> overriding POST to make it a PUT-->
+
+
+
+  </ul>
+  <% } %>
+  

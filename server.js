@@ -1,4 +1,5 @@
 'use strict';
+// <!-- //<form action="/book<%=book.id %>?_method=PUT" method="POST"></form> overriding POST to make it a PUT-->
 
 const express = require('express');
 const superagent = require('superagent');
@@ -11,12 +12,14 @@ const client = new pg.Client(DATABASE_URL);
 client.on('error', (error) => {
   console.log(error);
 });
+// const methodOverride = require('method-override');
+
 // allows app to read form data from URLs
 // boiler plate for talking to forms using POST
 app.use(express.urlencoded({ extended: true }));
 
 // loading the public folder
-app.use(express.static('./public'));
+app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
 
 //how to retrieve last inserted id psql 
@@ -24,7 +27,44 @@ app.set('view engine', 'ejs');
 // displays our home page
 //these are our routes
 app.get('/', getIndex);
-app.get('/books/:id', getBookInfo);
+// app.get('/books', getSearchForm);
+app.get('/books/:id', getDetails);
+app.get('/booksearch', searchPage);
+app.post('/booksearch', getBookSearch);
+app.post('/save', saveBooks);
+app.put('book/:id', updateBook);
+
+function getDetails(req, res) {
+  console.log(req.body);
+  const search = req.body.search;
+  // checking whether title or author is checked in new.ejs
+
+
+  res.render('partials/details', { book: 'book' });
+
+}
+
+function updateBook(req, res) {
+  res.send('updating a book');
+  //collect new data about the book from the client (front end) send that data to our sql data base which we will reference using the id
+  // res.redirect to the details page /book/:id
+
+
+
+}
+
+function saveBooks(req, res) {
+  const sqlSend = 'INSERT INTO books (title, author) VALUES ($1, $2) RETURNING ID';
+  const array = [req.body.title, req.body.author];
+  client.query(sqlSend, array).then(() => {
+    res.send('save');
+  });
+}
+
+function searchPage(req, res) {
+  res.render('searches/new');
+}
+
 function getIndex(req, res) {
   const sqlCheck = 'SELECT * FROM books';
   const array = [req.body.title];
@@ -77,7 +117,7 @@ function getIndex(req, res) {
 
       function getBookSearch(req, res) {
 
-        // sending info to googles api
+      // sending info to googles api
 
         // post use searchTitles req and res
         const search = req.body.search;
@@ -89,49 +129,40 @@ function getIndex(req, res) {
           superagent.get(url).then(obj => {
             const books = obj.body.items.map(item => new Book(item));
 
-            // console.log(books);
-            res.render('pages/searches/show.ejs', { books: books });
-          });
-        } else if (search[0] === 'author') {
-          const url = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${search[1]}`;
-          superagent.get(url).then(obj => {
+      // console.log(books);
+      res.render('pages/searches/show.ejs', { books: books });
+    });
+} else if (search[0] === 'author') {
+  const url = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${search[1]}`;
+  superagent.get(url).then(obj => {
 
-            const books = obj.body.items.map(item => new Book(item));
+    const books = obj.body.items.map(item => new Book(item));
+  });
+}}
 
-            // console.log(books);
-            res.render('pages/searches/show.ejs', { books: books });
-
-
-
-          });
-
-        }
-        else if (search[0] === 'author') {
-          const url = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${search[1]}`;
-          superagent.get(url).then(obj => {
-
-            const books = obj.body.items.map(item => new Book(item));
-            // const sqlSend = 'INSERT INTO books (title, author, url';
-            // books.forEach(obj => {
-            //   const sqlArr = [books[obj].title, books[obj].author, books[obj].url];
-            //   client.query(sqlSend, sqlArr);
-            // });
-
-            res.render('pages/searches/show', { books: books });
-
-          });
-
-        }
-      }
-
-      function Book(book) {
-        this.title = book.volumeInfo.title;
-        this.author = book.volumeInfo.authors ? book.volumeInfo.authors[0] : 'Unknown';
-        this.url = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : 'Unknown';
-      }
+function Book(book) {
+  this.title = book.volumeInfo.title;
+  this.author = book.volumeInfo.authors ? book.volumeInfo.authors[0] : 'Unknown';
+  this.url = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : 'Unknown';
+  this.isbn = ' ';
+  this.bookshelf = ' ';
+}
 
 
 
-      client.connect().then(() => {
-        app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
-      });
+client.connect().then(() => {
+  app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
+}).catch(console.error);
+
+//const id = req.params.id;
+//const sqlQuery = 'SELECT * FROM books WHERE id=$1 ;
+// const sqlArray = [id]
+// client.query(sqlQuery, sqlArray).
+//.then( result => {
+//   const singleBook = result.rows
+// });
+// res.render('details.ejs', {book: singleBook})
+
+client.connect().then(() => {
+  app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
+});

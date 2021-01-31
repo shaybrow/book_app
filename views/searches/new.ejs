@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html>
 
-  <%- include('../../layout/head.ejs') %>
+<%- include('../../layout/head.ejs') %>
 
   <body>
     <h1>Books</h1>
-    <nav>
-      <a href="/booksearch">Search By Book Title</a>
+    <%- include('../partials/nav.ejs') %>
       <form action="/booksearch" method="POST">
         <fieldset>
           <legend>
@@ -30,7 +29,7 @@
         </fieldset>
       </form>
 
-    </nav>
+
   </body>
 
 </html>
