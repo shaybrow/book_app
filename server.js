@@ -22,6 +22,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
 
+//how to retrieve last inserted id psql 
+// result.rows[0].id os where id lives
 // displays our home page
 //these are our routes
 app.get('/', getIndex);
@@ -65,56 +67,78 @@ function searchPage(req, res) {
 
 function getIndex(req, res) {
   const sqlCheck = 'SELECT * FROM books';
-
+  const array = [req.body.title];
   client.query(sqlCheck)
     .then(savedBooks => {
+      if (savedBooks.rows.length !== 0) {
+        res.send(savedBooks.rows[0]);
+      } else {
+        // const sqlCheck2 = 'INSERT INTO books';
+        const id = res.rows[0].id;
+        res.redirect(`/books/${id}`);
+      }
+      // app.get('/books', getSearchForm);
+      // app.get('/books/:id', getDetails);
+      app.get('/booksearch', searchPage);
+      app.post('/booksearch', getBookSearch);
+      app.post('/save', saveBooks);
 
-      // const sqlCheck2 = 'INSERT INTO books';
-      res.render('./pages/index.ejs', { books: savedBooks.rows });
+      function saveBooks(req, res) {
+        const sqlSend = 'INSERT INTO books (title, author) VALUES ($1, $2) RETURNING ID';
+        const array = [req.body.title, req.body.author];
+        client.query(sqlSend, array).then(() => {
+          res.send('save');
+        });
+      }
 
+      function searchPage(req, res) {
+        res.render('pages/searches/new');
+      }
+
+      function getIndex(req, res) {
+        const sqlCheck = 'SELECT * FROM books';
+
+        client.query(sqlCheck)
+          .then(savedBooks => {
+
+            // const sqlCheck2 = 'INSERT INTO books';
+            res.render('./pages/index.ejs', { books: savedBooks.rows });
+
+          });
+        // res.render('pages/index.ejs');
+      }
+
+      // function getBooksDb(req, res) {
+      //   const sqlSend = 'SELECT * FROM books';
+      //   client.query(sqlSend).then(obj => {
+      //     res.render('./pages/index.ejs', { books: obj.rows });
+      //   });
+      // }
+
+      function getBookSearch(req, res) {
+
+      // sending info to googles api
+
+        // post use searchTitles req and res
+        const search = req.body.search;
+        console.log(req.body);
+        // checking whether title or author is checked in new.ejs
+        if (search[0] === 'title') {
+
+          const url = `https://www.googleapis.com/books/v1/volumes?q=+intitle:${search[1]}`;
+          superagent.get(url).then(obj => {
+            const books = obj.body.items.map(item => new Book(item));
+
+      // console.log(books);
+      res.render('pages/searches/show.ejs', { books: books });
     });
-  // res.render('pages/index.ejs');
-}
+} else if (search[0] === 'author') {
+  const url = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${search[1]}`;
+  superagent.get(url).then(obj => {
 
-// function getBooksDb(req, res) {
-//   const sqlSend = 'SELECT * FROM books';
-//   client.query(sqlSend).then(obj => {
-//     res.render('./pages/index.ejs', { books: obj.rows });
-//   });
-// }
-
-function getBookSearch(req, res) {
-
-  // sending info to googles api
-
-  // post use searchTitles req and res
-  const search = req.body.search;
-  console.log(req.body);
-  // checking whether title or author is checked in new.ejs
-  if (search[0] === 'title') {
-
-    const url = `https://www.googleapis.com/books/v1/volumes?q=+intitle:${search[1]}`;
-    superagent.get(url).then(obj => {
-
-      const books = obj.body.items.map(item => new Book(item));
-
-      res.render('searches/show', { books: books });
-    });
-
-  }
-  else if (search[0] === 'author') {
-    const url = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${search[1]}`;
-    superagent.get(url).then(obj => {
-
-      const books = obj.body.items.map(item => new Book(item));
-
-      res.render('searches/show', { books: books });
-
-    });
-
-  }
-}
-
+    const books = obj.body.items.map(item => new Book(item));
+  });
+}}
 
 function Book(book) {
   this.title = book.volumeInfo.title;
@@ -139,3 +163,6 @@ client.connect().then(() => {
 // });
 // res.render('details.ejs', {book: singleBook})
 
+client.connect().then(() => {
+  app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
+});

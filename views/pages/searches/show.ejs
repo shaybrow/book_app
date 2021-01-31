@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+  <%- include('../../layout/head.ejs') %>
+
+  <body>
+    <h1>Books</h1>
+    <nav>
+      <a href="/booksearch">Search By Book Title</a>
+    </nav>
+    <ul>
+      <% for (let i=0;i<books.length; i++) { %>
+        <li>
+          <%= books[i].title %> by <%= books[i].author %>
+          <!-- this is how we'll save user data to database -->
+          <form action="save" method="POST">
+            <input type="hidden" name="title" value="<%= books[i].title %>">
+            <input type="submit" value="save">
+          </form>
+        </li>
+        <% } %>
+    </ul>
+  </body>
+
+</html>

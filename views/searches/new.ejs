@@ -1,40 +1,35 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Book Searcher</title>
-  <link ref="stylesheet" type="text/css" href="styles/base.css">
-</head>
+<%- include('../../layout/head.ejs') %>
 
-<body>
-  <h1>Books</h1>
-  <%- include('../partials/nav.ejs') %>
-    <form action="/booksearch" method="POST">
-      <fieldset>
-        <legend>
-          Search
-        </legend>
-        <label for="title">
-          Search
-        </label>
-        <input type="radio" name="search" value="author">
-        <label>
-          Author
-        </label>
-        <input type="radio" name="search" value="title">
-        <!-- https://www.w3schools.com/tags/att_input_type_radio.asp -->
-        <label>
-          Title
-        </label>
-        <input type="text" name="search">
-        <input type="submit" value="Search">
+  <body>
+    <h1>Books</h1>
+    <%- include('../partials/nav.ejs') %>
+      <form action="/booksearch" method="POST">
+        <fieldset>
+          <legend>
+            Search
+          </legend>
+          <label for="title">
+            Search
+          </label>
+          <input type="radio" name="search" value="author">
+          <label>
+            Author
+          </label>
+          <input type="radio" name="search" value="title">
+          <!-- https://www.w3schools.com/tags/att_input_type_radio.asp -->
+          <label>
+            Title
+          </label>
+          <input type="text" name="search">
+          <input type="submit" value="Search">
 
-      </fieldset>
-    </form>
+        </fieldset>
+      </form>
 
 
-</body>
+  </body>
 
 </html>
